@@ -32,7 +32,7 @@ which made it a safer time commitment than the alternatives I considered.
 **Reproduction summary:**
 The issue included the location for the test file so I checked if the file already existed. Navigate to the pages directory and you will see there is not a `__tests__` subdirectory.
 
-**PLAN.md link:** [link to PLAN.md in your fork]
+**PLAN.md link:** https://github.com/cre24/pathreview/blob/test/105-review-page-a11y-tests/docs/PLAN.md
 
 **Walkthrough video (recommended):** 
 
