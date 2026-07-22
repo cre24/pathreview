@@ -24,3 +24,16 @@ which made it a safer time commitment than the alternatives I considered.
 **Setup confirmation:** [x] App runs locally at localhost:5173
 
 **Cohort ledger:** [x] Issue added to cohort ledger
+
+## Week 8 — Reproduction & solution planning
+
+**Reproduction commit link:** There is no comment for me to leave for the issue so I will provide the expected file path for the test file: `frontend/src/pages/__tests__/ReviewPage.test.tsx`
+
+**Reproduction summary:**
+The issue included the location for the test file so I checked if the file already existed. Navigate to the pages directory and you will see there is not a `__tests__` subdirectory.
+
+**PLAN.md link:** [link to PLAN.md in your fork]
+
+**Walkthrough video (recommended):** 
+
+**Blockers or open questions:**
