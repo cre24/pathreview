@@ -37,3 +37,26 @@ The issue included the location for the test file so I checked if the file alrea
 **Walkthrough video (recommended):** 
 
 **Blockers or open questions:**
+
+## Week 9 — Solution building & PR submission
+
+### Check-in 1 (mid-week)
+
+**Current progress:**
+Committed the test scaffolding (commit 1). Wired `jest-axe` into
+`frontend/src/test/setup.ts` by registering the `toHaveNoViolations` matcher,
+and created `frontend/src/pages/__tests__/ReviewPage.test.tsx` with the mocks
+for `useReviewStatus` and `apiClient`, a `Review` fixture, a `renderReviewPage`
+router helper, and per-state setup shortcuts (loading, complete, failed,
+status-error, fetch-error). The file runs green with a passing smoke test and
+the working complete-state axe scan; the remaining assertions are stubbed as
+`it.todo`. This covers PLAN.md steps 3 (matcher) and 4 (helpers/mocks).
+
+**Next steps:**
+Fill in the role/semantic assertions (PLAN step 5: complete-state heading and
+Share/Export buttons, score shown vs. hidden, empty-sections fallback, failed
+w/ and w/o error_message, and the two error banners), then the remaining axe
+scans for each render state (PLAN step 7). Open the PR once green.
+
+**Blockers:**
+None.
