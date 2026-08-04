@@ -108,42 +108,88 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-// ===========================================================================
-// Scaffolding smoke test (delete once real tests below exist)
-// ===========================================================================
-describe('ReviewPage — smoke', () => {
-  it('renders the back-to-dashboard control in every state', () => {
+describe('ReviewPage — semantics & roles', () => {
+  it('exposes the back-to-dashboard button by accessible name', () => {
     setLoadingState()
     renderReviewPage()
     expect(
       screen.getByRole('button', { name: /back to dashboard/i })
     ).toBeInTheDocument()
   })
+
+  // Complete-state UI renders from the async getReview effect — await findBy*.
+  it('exposes the "Portfolio Review" heading when complete', async () => {
+    setCompleteState()
+    renderReviewPage()
+    expect(
+      await screen.findByRole('heading', { name: /portfolio review/i })
+    ).toBeInTheDocument()
+  })
+
+  it('exposes Share and Export buttons by accessible name', async () => {
+    setCompleteState()
+    renderReviewPage()
+    expect(
+      await screen.findByRole('button', { name: /share/i })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /export/i })).toBeInTheDocument()
+  })
+
+  it('renders the "Overall Score" heading when overall_score is defined', async () => {
+    setCompleteState()
+    renderReviewPage()
+    expect(
+      await screen.findByRole('heading', { name: /overall score/i })
+    ).toBeInTheDocument()
+  })
+
+  it('hides the score block when overall_score is undefined', async () => {
+    setCompleteState({ ...fixtureReview, overall_score: undefined })
+    renderReviewPage()
+    // Wait for the complete view first, else the negative assertion passes
+    // before the page has rendered at all.
+    await screen.findByRole('heading', { name: /portfolio review/i })
+    expect(
+      screen.queryByRole('heading', { name: /overall score/i })
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows the "No feedback sections available" fallback when sections empty', async () => {
+    setCompleteState({ ...fixtureReview, sections: [] })
+    renderReviewPage()
+    await screen.findByRole('heading', { name: /portfolio review/i })
+    expect(
+      screen.getByText(/no feedback sections available/i)
+    ).toBeInTheDocument()
+  })
+
+  it('shows the review-failed message with error_message when present', () => {
+    setFailedState('Model timed out')
+    renderReviewPage()
+    expect(screen.getByText('Model timed out')).toBeInTheDocument()
+  })
+
+  it('falls back to "An error occurred" when error_message is absent', () => {
+    setFailedState()
+    renderReviewPage()
+    expect(screen.getByText(/an error occurred/i)).toBeInTheDocument()
+  })
+
+  it('shows the status-error banner when useReviewStatus returns an error', () => {
+    setStatusErrorState('Network unreachable')
+    renderReviewPage()
+    expect(screen.getByText('Network unreachable')).toBeInTheDocument()
+  })
+
+  it('shows the fetch-error banner when getReview rejects', async () => {
+    setFetchErrorState('Could not load full review')
+    renderReviewPage()
+    expect(
+      await screen.findByText('Could not load full review')
+    ).toBeInTheDocument()
+  })
 })
 
-// ===========================================================================
-// Semantic / role assertions (PLAN step 5)
-// ===========================================================================
-describe('ReviewPage — semantics & roles', () => {
-  // Complete state: reachable landmarks + controls by role/name.
-  it.todo('exposes the "Portfolio Review" heading when complete')
-  it.todo('exposes Share and Export buttons by accessible name')
-  it.todo('renders the "Overall Score" heading when overall_score is defined')
-  it.todo('hides the score block when overall_score is undefined')
-  it.todo('shows the "No feedback sections available" fallback when sections empty')
-
-  // Failed state
-  it.todo('shows the review-failed message with error_message when present')
-  it.todo('falls back to "An error occurred" when error_message is absent')
-
-  // Error banners (distinct from failed status)
-  it.todo('shows the status-error banner when useReviewStatus returns an error')
-  it.todo('shows the fetch-error banner when getReview rejects')
-})
-
-// ===========================================================================
-// Axe scans across render states (PLAN step 7)
-// ===========================================================================
 describe('ReviewPage — a11y (axe)', () => {
   it.todo('loading state has no axe violations')
 
@@ -158,7 +204,7 @@ describe('ReviewPage — a11y (axe)', () => {
   it.todo('empty-sections state has no axe violations')
   it.todo('error-banner state has no axe violations')
 
-  // NOTE (out of scope, see PLAN.md risks): the score progress bar at
-  // ReviewPage.tsx:134-138 has no role/aria — not queryable by screen readers.
-  // TODO(#issue): add role="progressbar" + aria-valuenow and cover it here.
+  // The score progress bar has no role/aria, so it is not exposed to screen
+  // readers and cannot be asserted here. Left for a follow-up: add
+  // role="progressbar" + aria-valuenow, then cover it.
 })
