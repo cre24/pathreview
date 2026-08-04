@@ -191,7 +191,12 @@ describe('ReviewPage — semantics & roles', () => {
 })
 
 describe('ReviewPage — a11y (axe)', () => {
-  it.todo('loading state has no axe violations')
+  it('loading state has no axe violations', async () => {
+    setLoadingState()
+    const { container } = renderReviewPage()
+    await screen.findByText(/analyzing your portfolio/i)
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('complete state has no axe violations', async () => {
     setCompleteState()
@@ -200,9 +205,26 @@ describe('ReviewPage — a11y (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it.todo('failed state has no axe violations')
-  it.todo('empty-sections state has no axe violations')
-  it.todo('error-banner state has no axe violations')
+  it('failed state has no axe violations', async () => {
+    setFailedState('Model timed out')
+    const { container } = renderReviewPage()
+    await screen.findByText(/review failed/i)
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('empty-sections state has no axe violations', async () => {
+    setCompleteState({ ...fixtureReview, sections: [] })
+    const { container } = renderReviewPage()
+    await screen.findByText(/no feedback sections available/i)
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('error-banner state has no axe violations', async () => {
+    setStatusErrorState('Network unreachable')
+    const { container } = renderReviewPage()
+    await screen.findByText('Network unreachable')
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   // The score progress bar has no role/aria, so it is not exposed to screen
   // readers and cannot be asserted here. Left for a follow-up: add
