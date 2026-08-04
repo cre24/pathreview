@@ -60,3 +60,33 @@ scans for each render state (PLAN step 7). Open the PR once green.
 
 **Blockers:**
 None.
+
+---
+
+### Check-in 2 (end of week)
+
+**PR link:** https://github.com/ascherj/pathreview/pull/745
+
+**Branch:** `test/105-review-page-a11y-tests`
+
+**What you built:**
+Added the first automated test coverage for ReviewPage: an accessibility test suite built on jest-axe that scans each render state for violations and asserts on roles and accessible names to confirm interactive elements remain reachable by assistive technology.
+
+**Tests added or updated:**
+- `frontend/src/pages/__tests__/ReviewPage.test.tsx` (new) — axe scans across
+render states and semantic/role assertions. 
+- `frontend/src/test/setup.ts` — registered the `jest-axe` `toHaveNoViolations` matcher.
+
+**Self-review confirmation:** [x] make check passes  [x] make test-unit passes
+
+**Pre-existing failures (baseline on `main`, none introduced by this PR):**
+- `make test-unit`: 53 failed / 375 passed, all in backend modules
+  (`test_review_service`, `test_security`, `test_skill_extractor`, …).
+- `make lint`: 182 ruff errors, none in `frontend/` (`make check` stops here).
+- Frontend `npm test`: 2 failures — `ProfileForm.test.tsx` (uninstalled
+  `@testing-library/user-event`) and `ReviewSection.test.tsx >
+  "starts collapsed and expands on click"`.
+This PR only adds `ReviewPage.test.tsx` and one matcher line in `setup.ts`; it
+touches no Python and no other frontend file. All 15 new tests pass.
+
+**Draft PR feedback received from:** None
