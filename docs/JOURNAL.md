@@ -90,3 +90,42 @@ This PR only adds `ReviewPage.test.tsx` and one matcher line in `setup.ts`; it
 touches no Python and no other frontend file. All 15 new tests pass.
 
 **Draft PR feedback received from:** None
+
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:** [ ] Yes  [x] No
+
+**Summary of feedback:**
+No reviewer or maintainer feedback came in. (Per the Summer 2026 course note,
+reviewer feedback is not a feature this term.) The PR
+(https://github.com/ascherj/pathreview/pull/745) was opened as ready-for-review
+against `ascherj/pathreview:main`.
+
+**How you responded:**
+N/A — no feedback to respond to.
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+The accessibility scans themselves were the easy part — the hard part was the component's async rendering. The "complete" review UI doesn't come from the polling hook I was mocking; it renders from a *second* `apiClient.getReview` call inside a `useEffect`, so mocking `useReviewStatus` alone rendered nothing. I had to mock both and switch from `getBy*` to `await findBy*`. The subtlest bug was the "score hidden" test: a negative assertion (`queryByRole(...).not
+.toBeInTheDocument()`) passes trivially if you check it before the page has rendered, so it needed an `await` first or it would have been a false green.
+
+**What did you learn about working in a large codebase?**
+I already had experience working in a large codebase. This re-affirmed that you read more than you write. Before a single assertion I had to trace the component, the `useReviewStatus` hook, the `Review` type, and the api client to map every render branch. I also learned not to trust generic instructions over the actual repo: the course workflow assumed a Python backend (`make check`, `make test-unit`, `tests/unit/`), but my change was frontend-only (`vitest`, `npm test`) — the `make` commands never touched my code. And the repo already had 53 failing backend tests and 182 lint errors unrelated to me, which taught me the real bar for a contribution: don't make it worse, and document the
+baseline so reviewers can tell your change apart from existing debt.
+
+**How did AI tools help — and where did they fall short?**
+AI was most valuable as a way to map the codebase quickly. Instead of reading every file cold, I could have it trace `ReviewPage` through the `useReviewStatus` hook, the `Review` type, and the api client and lay out all the render branches I needed to cover — loading, complete, failed, empty-sections, and the two error banners. That turned "what does this component even do?" into a concrete checklist in minutes. I'd done accessibility testing at work before, so the concepts weren't new — an axe scan as an automated sweep for violations like contrast or missing labels, versus a role/name assertion proving an element is actually reachable by assistive technology. What was new was `jest-axe` specifically, and AI helped translate what I already understood about a11y into this tool's API and this codebase — wiring the `toHaveNoViolations` matcher, and confirming why the score progress bar, with no `role` or `aria`, can't be queried by a screen reader and belongs in a follow-up rather than this PR.
+
+Where it fell short: honestly, I'm not sure yet. This task was scoped tightly enough that I didn't hit an obvious wall — the clearest limit was just that the decisions stayed mine. AI could surface options and explain trade-offs, but choosing what to scope out, how to split the commits, and verifying its claims against the real repo were still on me.
+
+**What would you do differently if you started over?**
+Run `make check` and `make test-unit` on day one to capture the pre-existing baseline *before* writing anything — I discovered those 53 failures late, and knowing them up front would have saved second-guessing whether I'd broken something. I'd also consider filing the score-progress-bar accessibility gap as a paired follow-up issue early, so it's tracked rather than living as a TODO
+comment.
+
+**What are you most proud of?**
+That I contributed to a large codebase outside of work at all. I don't usually code in my own time, so the thing I'm proud of isn't any single test — it's the effort I put in to pick up an unfamiliar task, see it through, and actually finish it. Turning a file that didn't exist into a 15-test accessibility suite covering every render state, on someone else's project and on my own time, is proof to myself that I can do this beyond the structure of my day job.
